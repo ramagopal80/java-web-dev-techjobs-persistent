@@ -14,15 +14,14 @@ public class Employer extends AbstractEntity {
 
  @NotBlank(message = "Location is Required")
  @Size(max = 100)
- private String location;
+  private String location;
 
-    @JoinColumn
-    @OneToMany(mappedBy = "employer")
-    private final List<Job> jobs = new ArrayList<>();
+    @JoinColumn(name = "employer_id")
+    @OneToMany
+    private List<Job> jobs = new ArrayList<>();
 
-    public Employer() {
-        this.location = location;
-    }
+    public Employer() {}
+
     public Employer(String location){
         this.location = location;
     }
@@ -33,5 +32,9 @@ public class Employer extends AbstractEntity {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public List<Job> getJobs() {
+        return jobs;
     }
 }

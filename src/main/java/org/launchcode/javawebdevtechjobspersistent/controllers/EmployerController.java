@@ -2,6 +2,7 @@ package org.launchcode.javawebdevtechjobspersistent.controllers;
 
 import org.launchcode.javawebdevtechjobspersistent.models.Employer;
 import org.launchcode.javawebdevtechjobspersistent.models.data.EmployerRepository;
+import org.launchcode.javawebdevtechjobspersistent.models.data.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,14 @@ public class EmployerController {
     @Autowired
     private EmployerRepository employerRepository;
 
+    @Autowired
+    private JobRepository jobRepository;
+
+    @RequestMapping("")
+    public String index(Model model){
+        model.addAttribute("employers", employerRepository.findAll());
+        return "employers/index";
+    }
 
     @GetMapping
     public String displayAllEmployers(Model model) {
@@ -26,28 +35,30 @@ public class EmployerController {
         return "employers/index";
     }
 
+
     @GetMapping("add")
     public String displayAddEmployerForm(Model model) {
+        model.addAttribute("title", "All Employers");
         model.addAttribute(new Employer());
         return "employers/add";
     }
 
     @PostMapping("add")
     public String processAddEmployerForm(@ModelAttribute @Valid Employer newEmployer,
-                                    Errors errors, Model model) {
+                                         Errors errors, Model model) {
 
         if (errors.hasErrors()) {
             return "employers/add";
         }
-
         employerRepository.save(newEmployer);
+        model.addAttribute("employer", employerRepository.findAll());
         return "redirect:";
     }
 
     @GetMapping("view/{employerId}")
     public String displayViewEmployer(Model model, @PathVariable int employerId) {
 
-        Optional optEmployer = employerRepository.findById(employerId);
+        Optional optEmployer = null;
         if (optEmployer.isPresent()) {
             Employer employer = (Employer) optEmployer.get();
             model.addAttribute("employer", employer);
